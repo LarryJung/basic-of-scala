@@ -27,6 +27,18 @@ object MyModule {
     loop(n, 0, 1, 0)
   }
 
+  // https://medium.com/@frank.tan/fibonacci-tail-recursive-explained-876edf5e86fc
+  def getFibonacci(index: Int): Int = {
+    @tailrec
+    def getTailRec(index: Int, prev: Int, current: Int): Int =
+      if (index <= 0)
+        current
+      else
+        getTailRec(index - 1, prev = prev + current, current = prev)
+
+    getTailRec(index, prev = 1, current = 0)
+  }
+
   private def formatAbs(x: Int) = {
     val msg = "The absoulte value of %d is %d"
     msg.format(x, abs(x))

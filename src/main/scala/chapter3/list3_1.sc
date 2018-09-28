@@ -26,7 +26,7 @@ object List {
   }
 
   def addOne(as: List[Int]): List[Int] =
-    foldRight(as, List[Int]())((h, t) => Cons(h+1, t))
+    foldRight(as, List[Int]())((h, t) => Cons(h + 1, t))
 
   def doubleToString(as: List[Double]): List[String] =
     foldRight(as, List[String]())((h, t) => Cons(h.toString, t))
@@ -35,7 +35,10 @@ object List {
     foldRight(as, List[B]())((h, t) => Cons(f(h), t))
 
   def filter[A](as: List[A])(f: A => Boolean): List[A] =
-    foldRight(as, List[A]())((h, t) => if (f(h)) Cons(h, t) else Nil)
+    foldRight(as, List[A]())((h, t) => if (f(h)) Cons(h, t) else t)
+
+  def filter2[A](as: List[A])(f: A => Boolean): List[A] =
+    flatMap(as)(a => if (f(a)) List(a) else Nil)
 
   def flatMap[A, B](as: List[A])(f: A => List[B]): List[B] =
     foldRight(as, List[B]())((h, t) => append(f(h), t))
@@ -47,7 +50,7 @@ object List {
   }
 
   def append2[A](a1: List[A], a2: List[A]): List[A] =
-//    foldRight(a1, a2)((h:A, t:List[A]) => Cons(h, t))
+  //    foldRight(a1, a2)((h:A, t:List[A]) => Cons(h, t))
     foldRight(a1, a2)(Cons(_, _))
 
   def append3[A](a1: List[A], a2: List[A]): List[A] =
@@ -58,7 +61,19 @@ object List {
     case Cons(h, t) => Cons(h, append(t, a2))
   }
 
-  def connect[A](as : List[List[A]]): List[A] =
+  def addPairwise(a: List[Int], b: List[Int]): List[Int] = (a, b) match {
+    case (Nil, _) => Nil
+    case (_, Nil) => Nil
+    case (Cons(h1, t1), Cons(h2, t2)) => Cons(h1 + h2, addPairwise(t1, t2))
+  }
+
+  def zipWith[A, B, C](a: List[A], b: List[B])(f: (A, B) => C): List[C] = (a, b) match {
+    case (Nil, _) => Nil
+    case (_, Nil) => Nil
+    case (Cons(h1, t1), Cons(h2, t2)) => Cons(f(h1, h2), zipWith(t1, t2)(f))
+  }
+
+  def connect[A](as: List[List[A]]): List[A] =
     foldRight(as, List[A]())((h, t) => append2(h, t))
 
   def reverse[A](l: List[A]): List[A] =
@@ -147,6 +162,25 @@ object List {
     go(l)
   }
 
+  def hasSubsequence[A](sup: List[A], sub: List[A]): Boolean = {
+    def hasElement[A] (l: List[A], x: A): Boolean = l match {
+      case Nil => false
+      case Cons (h, t) => if (h == x) true else hasElement (t, x)
+    }
+    sub match {
+      case Nil => true
+      case Cons(h, t) => if (!hasElement(sup, h)) false else hasSubsequence(sup, t)
+    }
+  }
+
+
+  @annotation.tailrec
+  def startsWith[A](l: List[A], prefix: List[A]): Boolean = (l,prefix) match {
+    case (_,Nil) => true
+    case (Cons(h,t),Cons(h2,t2)) if h == h2 => startsWith(t, t2)
+    case _ => false
+  }
+
   // 틀림..
   def init3[A](l: List[A]): List[A] = l match {
     case Nil => Nil
@@ -191,5 +225,13 @@ connect(List(List(1, 2), List(3, 4), List(5, 6)))
 addOne(List(1, 2, 3))
 doubleToString(List(1.0, 2.0, 3.0))
 map(List(1, 2, 3))(x => x.toString)
-filter(List(1, 2, 3, 4, 5))(x => x < 4)
+
+filter(List(1, 2, 3, 4, 5, 6, 7, 8))(x => x % 2 == 0)
+filter2(List(1, 2, 3, 4, 5, 6, 7, 8))(x => x % 2 == 0)
+
 flatMap(List(1, 2, 3))(i => List(i, i))
+addPairwise(List(1, 2, 3), List(4, 5, 6))
+zipWith(List(1, 2, 3), List("a", "b", "c"))((_,_))
+
+hasSubsequence(List(1, 2, 3, 4), List(1, 3))
+startsWith(List(1, 2, 3), List(2, 3))

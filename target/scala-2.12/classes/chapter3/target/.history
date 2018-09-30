@@ -1,0 +1,8 @@
+compile
+sum
+/sum(drop(List(1, 2, 3, 4, 5), 4))
+sum(drop(List(1, 2, 3, 4, 5), 4))
+:q
+zuit
+quit
+exit

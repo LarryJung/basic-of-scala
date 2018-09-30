@@ -1,7 +1,6 @@
-package etc
+package etc.typeClass
 
 import cats._
-import etc.CatsShow.Person
 
 object CatsShow extends App {
 

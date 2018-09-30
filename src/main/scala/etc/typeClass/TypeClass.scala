@@ -1,3 +1,5 @@
+package etc.typeClass
+
 object TypeClass extends App {
 
   trait Printable[A] {
@@ -37,8 +39,8 @@ object TypeClass extends App {
 
   }
 
-  import PrintSyntax._
   import PrintDefaults._
+  import PrintSyntax._
 
   "hello".print
   Print.print("Hello")
